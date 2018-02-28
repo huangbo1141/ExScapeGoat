@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "-[VSBaseViewController showBrowserViewForURLString:]:VSBaseViewController.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "app_delegate">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "-[QMAppDelegate openURL:]:QMAppDelegate.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "self.rootViewController">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>

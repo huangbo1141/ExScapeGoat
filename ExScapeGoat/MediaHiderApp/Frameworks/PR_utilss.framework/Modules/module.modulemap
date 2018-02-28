@@ -1,0 +1,11 @@
+framework module PR_utilss {
+  umbrella header "PR_utilss.h"
+
+  export *
+  module * { export * }
+}
+
+module PR_utilss.Swift {
+    header "PR_utilss-Swift.h"
+    requires objc
+}

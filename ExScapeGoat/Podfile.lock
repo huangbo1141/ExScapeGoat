@@ -1,0 +1,145 @@
+PODS:
+  - Bolts (1.8.4):
+    - Bolts/AppLinks (= 1.8.4)
+    - Bolts/Tasks (= 1.8.4)
+  - Bolts/AppLinks (1.8.4):
+    - Bolts/Tasks
+  - Bolts/Tasks (1.8.4)
+  - Crashlytics (3.8.3):
+    - Fabric (~> 1.6.3)
+  - Digits (2.2.0):
+    - TwitterCore (= 2.2.0)
+  - Fabric (1.6.11)
+  - FBSDKCoreKit (4.11.0):
+    - Bolts (~> 1.7)
+  - FBSDKLoginKit (4.11.0):
+    - FBSDKCoreKit
+  - FBSDKShareKit (4.11.0):
+    - FBSDKCoreKit
+  - FLAnimatedImage (1.0.12)
+  - Flurry-iOS-SDK/FlurrySDK (7.8.1)
+  - IQKeyboardManager (4.0.7)
+  - libextobjc/EXTKeyPathCoding (0.4.1):
+    - libextobjc/RuntimeExtensions
+  - libextobjc/EXTScope (0.4.1):
+    - libextobjc/RuntimeExtensions
+  - libextobjc/RuntimeExtensions (0.4.1)
+  - MPGNotification (1.2.4)
+  - NYTPhotoViewer (1.1.0):
+    - NYTPhotoViewer/AnimatedGifSupport (= 1.1.0)
+    - NYTPhotoViewer/Core (= 1.1.0)
+  - NYTPhotoViewer/AnimatedGifSupport (1.1.0):
+    - FLAnimatedImage (~> 1.0.8)
+    - NYTPhotoViewer/Core
+  - NYTPhotoViewer/Core (1.1.0)
+  - QMChatViewController (0.4):
+    - QMChatViewController/Categories (= 0.4)
+    - QMChatViewController/Protocols (= 0.4)
+    - QMChatViewController/QMChatDataSource (= 0.4)
+    - QMChatViewController/QMChatLocationSnapshotter (= 0.4)
+    - QMChatViewController/Sections (= 0.4)
+    - QMChatViewController/Utils (= 0.4)
+    - QMChatViewController/Views (= 0.4)
+    - QuickBlox (>= 2.0)
+    - SDWebImage (~> 3.6)
+    - TTTAttributedLabel (> 1.13)
+  - QMChatViewController/Categories (0.4):
+    - QMChatViewController/QMChatLocationSnapshotter
+    - QuickBlox (>= 2.0)
+    - SDWebImage (~> 3.6)
+    - TTTAttributedLabel (> 1.13)
+  - QMChatViewController/Protocols (0.4):
+    - QuickBlox (>= 2.0)
+    - SDWebImage (~> 3.6)
+    - TTTAttributedLabel (> 1.13)
+  - QMChatViewController/QMChatDataSource (0.4):
+    - QuickBlox (>= 2.0)
+    - SDWebImage (~> 3.6)
+    - TTTAttributedLabel (> 1.13)
+  - QMChatViewController/QMChatLocationSnapshotter (0.4):
+    - QuickBlox (>= 2.0)
+    - SDWebImage (~> 3.6)
+    - TTTAttributedLabel (> 1.13)
+  - QMChatViewController/Sections (0.4):
+    - QMChatViewController/QMChatDataSource
+    - QuickBlox (>= 2.0)
+    - SDWebImage (~> 3.6)
+    - TTTAttributedLabel (> 1.13)
+  - QMChatViewController/Utils (0.4):
+    - QMChatViewController/Categories
+    - QuickBlox (>= 2.0)
+    - SDWebImage (~> 3.6)
+    - TTTAttributedLabel (> 1.13)
+  - QMChatViewController/Views (0.4):
+    - QMChatViewController/Categories
+    - QMChatViewController/Protocols
+    - QMChatViewController/Utils
+    - QuickBlox (>= 2.0)
+    - SDWebImage (~> 3.6)
+    - TTTAttributedLabel (> 1.13)
+  - QMServices (0.4.5):
+    - Bolts (>= 1.5.0)
+    - QuickBlox (>= 2.6.5)
+  - QuickBlox (2.9)
+  - Reachability (3.2)
+  - SDWebImage (3.8.2):
+    - SDWebImage/Core (= 3.8.2)
+  - SDWebImage/Core (3.8.2)
+  - SSKeychain (1.2.3)
+  - SVProgressHUD (1.1.3)
+  - TTTAttributedLabel (2.0.0)
+  - TwitterCore (2.2.0):
+    - Fabric
+  - UIDevice-Hardware (0.1.8)
+
+DEPENDENCIES:
+  - Crashlytics
+  - Digits (~> 2.2.0)
+  - Fabric
+  - FBSDKCoreKit (~> 4.11.0)
+  - FBSDKLoginKit (~> 4.11.0)
+  - FBSDKShareKit (~> 4.11.0)
+  - Flurry-iOS-SDK/FlurrySDK
+  - IQKeyboardManager
+  - libextobjc/EXTKeyPathCoding (~> 0.4.1)
+  - libextobjc/EXTScope (~> 0.4.1)
+  - MPGNotification (~> 1.2)
+  - NYTPhotoViewer (~> 1.1.0)
+  - QMChatViewController
+  - QMServices
+  - Reachability (~> 3.2)
+  - SDWebImage (~> 3.6)
+  - SSKeychain (~> 1.2.2)
+  - SVProgressHUD (~> 1.0)
+  - TTTAttributedLabel (~> 2.0)
+  - TwitterCore (~> 2.2.0)
+  - UIDevice-Hardware (~> 0.1.3)
+
+SPEC CHECKSUMS:
+  Bolts: 8a7995239dbe724f9cba2248b766d48b7ebdd322
+  Crashlytics: 2b6dbe138a42395577cfa73dfa1aa7248cadf39e
+  Digits: 335c479574eb2bbc50be326c1daf505b68d87135
+  Fabric: 5911403591946b8228ab1c51d98f1d7137e863c6
+  FBSDKCoreKit: 686ac982723a14ec9ddb85e2f81235d7706c891b
+  FBSDKLoginKit: bade9fc78277764149ccc5bfaadbf13c83175c6a
+  FBSDKShareKit: 2d1746144cfc8a9dbbd24997c34ee0471be51b6a
+  FLAnimatedImage: 4a0b56255d9b05f18b6dd7ee06871be5d3b89e31
+  Flurry-iOS-SDK: 3d1daff95d43b8fead3bb43590d54c6e8244d410
+  IQKeyboardManager: 69002bb4fea60596b710e57d426abc00e5063630
+  libextobjc: a650fc1bf489a3d3a9bc2e621efa3e1006fc5471
+  MPGNotification: f0e3924087afa9b3eccd5ce624e03965ae31ae61
+  NYTPhotoViewer: e80e8767f3780d2df37c6f72cbab15d6c7232911
+  QMChatViewController: 6fe589c26396ce2ece7549b34835cf0a2551ec32
+  QMServices: 617057b228eb5e41341e50216fc4af2fce3cfa46
+  QuickBlox: 4e071921a5fb4b0ecde1f66c7ce04a70ededc90c
+  Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
+  SDWebImage: 098e97e6176540799c27e804c96653ee0833d13c
+  SSKeychain: 3f42991739c6c60a9cf1bbd4dff6c0d3694bcf3d
+  SVProgressHUD: 748080e4f36e603f6c02aec292664239df5279c1
+  TTTAttributedLabel: 8cffe8e127e4e82ff3af1e5386d4cd0ad000b656
+  TwitterCore: 115527630bb2986954adc928b8c895a92bcd57e5
+  UIDevice-Hardware: ecb52d9a7b223b31f81982358e2b0769ac1a7918
+
+PODFILE CHECKSUM: b96cb8f2dd6e7d484a3d645a2bac737d6069f14d
+
+COCOAPODS: 1.3.1

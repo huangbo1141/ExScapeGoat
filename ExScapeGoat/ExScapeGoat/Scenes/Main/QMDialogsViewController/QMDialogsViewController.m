@@ -21,6 +21,14 @@
 #import <SVProgressHUD.h>
 #import "QBChatDialog+OpponentID.h"
 #import "QMSplitViewController.h"
+#import "QMGlobalSearchDataSource.h"
+#import "QMAlert.h"
+#import "QMContactsDataSource.h"
+#import "QMContactsSearchDataProvider.h"
+#import "QMContactCell.h"
+#import "QMSearchCell.h"
+#import "QMNoContactsCell.h"
+#import "QMUserInfoViewController.h"
 
 // category
 #import "UINavigationController+QMNotification.h"
@@ -35,12 +43,15 @@ QMChatServiceDelegate,
 QMChatConnectionDelegate,
 
 UITableViewDelegate,
+
+/// Search Related
+QMSearchResultsControllerDelegate,
 UISearchControllerDelegate,
 UISearchResultsUpdating,
+UISearchBarDelegate,
 
 QMPushNotificationManagerDelegate,
-QMDialogsDataSourceDelegate,
-QMSearchResultsControllerDelegate
+QMDialogsDataSourceDelegate
 >
 
 @property (strong, nonatomic) UISearchController *searchController;
@@ -49,14 +60,21 @@ QMSearchResultsControllerDelegate
 /**
  *  Data sources
  */
+@property (strong, nonatomic) QMContactsDataSource *dataSource;
 @property (strong, nonatomic) QMDialogsDataSource *dialogsDataSource;
 @property (strong, nonatomic) QMPlaceholderDataSource *placeholderDataSource;
-@property (strong, nonatomic) QMDialogsSearchDataSource *dialogsSearchDataSource;
+@property (strong, nonatomic) QMGlobalSearchDataSource *globalSearchDataSource;
 
 @property (weak, nonatomic) BFTask *addUserTask;
 @property (strong, nonatomic) id observerWillEnterForeground;
 
 @end
+
+typedef NS_ENUM(NSUInteger, QMSearchScopeButtonIndex) {
+    
+    QMSearchScopeButtonIndexLocal,
+    QMSearchScopeButtonIndexGlobal
+};
 
 @implementation QMDialogsViewController
 
@@ -94,6 +112,7 @@ QMSearchResultsControllerDelegate
     // Subscribing delegates
     [[QMCore instance].chatService addDelegate:self];
     [[QMCore instance].usersService addDelegate:self];
+    [[QMCore instance].contactListService addDelegate:self];
     
     [self performAutoLoginAndFetchData];
     
@@ -128,12 +147,12 @@ QMSearchResultsControllerDelegate
     gradientLayer.colors = @[ (__bridge id)[UIColor whiteColor].CGColor, (__bridge id)[UIColor whiteColor].CGColor ];
     gradientLayer.startPoint = CGPointMake(0.0, 0.5);
     gradientLayer.endPoint = CGPointMake(1.0, 0.5);
-     
+    
     UIGraphicsBeginImageContext(gradientLayer.bounds.size);
     [gradientLayer renderInContext:UIGraphicsGetCurrentContext()];
     UIImage *gradientImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
-     
+    
     [self.navigationController.navigationBar setBackgroundImage: gradientImage forBarMetrics:UIBarMetricsDefault];
     
     UIImage *img = [UIImage imageNamed:@"text_logo.png"];
@@ -141,15 +160,15 @@ QMSearchResultsControllerDelegate
     [imgView setImage:img];
     // setContent mode aspect fit
     [imgView setContentMode:UIViewContentModeScaleAspectFit];
-//    self.navigationItem.titleView = imgView;
+    //    self.navigationItem.titleView = imgView;
     self.navigationItem.title = @"Mesages";
     
-//    UIButton *button = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 40, 40)];
-//    [button setImage:[[UIImage imageNamed:@"BtnBack"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] forState:UIControlStateNormal];
-//    [button.imageView setTintColor:[UIColor whiteColor]];
-//    // [button addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
-//    UIBarButtonItem *buttonItem = [[UIBarButtonItem alloc] initWithCustomView:button];
-//    self.navigationItem.leftBarButtonItem = buttonItem;
+    //    UIButton *button = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 40, 40)];
+    //    [button setImage:[[UIImage imageNamed:@"BtnBack"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] forState:UIControlStateNormal];
+    //    [button.imageView setTintColor:[UIColor whiteColor]];
+    //    // [button addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
+    //    UIBarButtonItem *buttonItem = [[UIBarButtonItem alloc] initWithCustomView:button];
+    //    self.navigationItem.leftBarButtonItem = buttonItem;
     
     [self checkIfDialogsDataSource];
 }
@@ -157,8 +176,7 @@ QMSearchResultsControllerDelegate
     [self dismissViewControllerAnimated:true completion:nil];
 }
 
-- (void)viewWillAppear:(BOOL)animated
-{
+- (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
     if (self.searchController.isActive) {
@@ -182,7 +200,7 @@ QMSearchResultsControllerDelegate
         [self.refreshControl beginRefreshing];
         self.tableView.contentOffset = offset;
     }
-
+    
 }
 
 - (void)performAutoLoginAndFetchData {
@@ -249,11 +267,14 @@ QMSearchResultsControllerDelegate
     
     self.searchController = [[UISearchController alloc] initWithSearchResultsController:self.searchResultsController];
     self.searchController.searchBar.placeholder = NSLocalizedString(@"QM_STR_SEARCH_BAR_PLACEHOLDER", nil);
+    self.searchController.searchBar.delegate = self;
     self.searchController.searchResultsUpdater = self;
     self.searchController.delegate = self;
     self.searchController.dimsBackgroundDuringPresentation = NO;
     self.definesPresentationContext = YES;
     [self.searchController.searchBar sizeToFit]; // iOS8 searchbar sizing
+    
+    self.tableView.tableHeaderView = self.searchController.searchBar;
 }
 
 - (void)configureDataSources {
@@ -264,10 +285,67 @@ QMSearchResultsControllerDelegate
     
     self.tableView.dataSource = self.placeholderDataSource;
     
-    QMDialogsSearchDataProvider *searchDataProvider = [[QMDialogsSearchDataProvider alloc] init];
+    /// Search Realted
+    
+    QMContactsSearchDataProvider *searchDataProvider = [[QMContactsSearchDataProvider alloc] init];
     searchDataProvider.delegate = self.searchResultsController;
     
-    self.dialogsSearchDataSource = [[QMDialogsSearchDataSource alloc] initWithSearchDataProvider:searchDataProvider];
+    
+    QMGlobalSearchDataProvider *globalSearchDataProvider = [[QMGlobalSearchDataProvider alloc] init];
+    globalSearchDataProvider.delegate = self.searchResultsController;
+    
+    self.globalSearchDataSource = [[QMGlobalSearchDataSource alloc] initWithSearchDataProvider:globalSearchDataProvider];
+    
+    @weakify(self);
+    self.globalSearchDataSource.didAddUserBlock = ^(UITableViewCell *cell) {
+        
+        @strongify(self);
+        if (self.addUserTask) {
+            // task in progress
+            return;
+        }
+        
+        [SVProgressHUD showWithMaskType:SVProgressHUDMaskTypeClear];
+        
+        NSIndexPath *indexPath = [self.searchResultsController.tableView indexPathForCell:cell];
+        QBUUser *user = self.globalSearchDataSource.items[indexPath.row];
+        
+        self.addUserTask = [[[QMCore instance].contactManager addUserToContactList:user] continueWithBlock:^id _Nullable(BFTask * _Nonnull task) {
+            
+            [SVProgressHUD dismiss];
+            
+            if (!task.isFaulted
+                && self.searchController.isActive
+                && [self.searchResultsController.tableView.dataSource conformsToProtocol:@protocol(QMGlobalSearchDataSourceProtocol)]) {
+                
+                [self.searchResultsController.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+            }
+            else {
+                
+                switch ([QMCore instance].chatService.chatConnectionState) {
+                        
+                    case QMChatConnectionStateDisconnected:
+                    case QMChatConnectionStateConnected:
+                        
+                        if ([[QMCore instance] isInternetConnected]) {
+                            
+                            [QMAlert showAlertWithMessage:NSLocalizedString(@"QM_STR_CHAT_SERVER_UNAVAILABLE", nil) actionSuccess:NO inViewController:self];
+                        }
+                        else {
+                            
+                            [QMAlert showAlertWithMessage:NSLocalizedString(@"QM_STR_CHECK_INTERNET_CONNECTION", nil) actionSuccess:NO inViewController:self];
+                        }
+                        break;
+                        
+                    case QMChatConnectionStateConnecting:
+                        [QMAlert showAlertWithMessage:NSLocalizedString(@"QM_STR_CONNECTION_IN_PROGRESS", nil) actionSuccess:NO inViewController:self];
+                        break;
+                }
+            }
+            
+            return nil;
+        }];
+    };
 }
 
 #pragma mark - UITableViewDelegate
@@ -301,46 +379,113 @@ QMSearchResultsControllerDelegate
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     
-    if ([segue.identifier isEqualToString:kQMSceneSegueChat]) {
-        
+    if ([segue.identifier isEqualToString:kQMSceneSegueUserInfo]) {
         UIViewController* vc = segue.destinationViewController;
         if ([vc isKindOfClass:[UINavigationController class]]) {
-            UINavigationController *chatNavigationController = segue.destinationViewController;
-            
-            QMChatVC *chatViewController = (QMChatVC *)chatNavigationController.topViewController;
-            chatViewController.chatDialog = sender;
-            
-            chatViewController.navigationItem.leftBarButtonItem = self.splitViewController.displayModeButtonItem;
-            chatViewController.navigationItem.leftItemsSupplementBackButton = YES;
-        }else if([vc isKindOfClass:[QMChatVC class]]){
-            QMChatVC *chatViewController = (QMChatVC *)segue.destinationViewController;;
-            chatViewController.chatDialog = sender;
+            UINavigationController *navigationController = segue.destinationViewController;
+            QMUserInfoViewController *userInfoVC = navigationController.viewControllers.firstObject;
+            userInfoVC.user = sender;
+        }else if([vc isKindOfClass:[QMUserInfoViewController class]]){
+            QMUserInfoViewController *userInfoVC = segue.destinationViewController;
+            userInfoVC.user = sender;
         }
         
-//        chatViewController.navigationItem.leftBarButtonItem = self.splitViewController.displayModeButtonItem;
-//        chatViewController.navigationItem.leftItemsSupplementBackButton = YES;
     }
+    
+    //    if ([segue.identifier isEqualToString:kQMSceneSegueChat]) {
+    //
+    //        UIViewController* vc = segue.destinationViewController;
+    //        if ([vc isKindOfClass:[UINavigationController class]]) {
+    //            UINavigationController *chatNavigationController = segue.destinationViewController;
+    //
+    //            QMChatVC *chatViewController = (QMChatVC *)chatNavigationController.topViewController;
+    //            chatViewController.chatDialog = sender;
+    //
+    //            chatViewController.navigationItem.leftBarButtonItem = self.splitViewController.displayModeButtonItem;
+    //            chatViewController.navigationItem.leftItemsSupplementBackButton = YES;
+    //        }else if([vc isKindOfClass:[QMChatVC class]]){
+    //            QMChatVC *chatViewController = (QMChatVC *)segue.destinationViewController;;
+    //            chatViewController.chatDialog = sender;
+    //        }
+    //
+    ////        chatViewController.navigationItem.leftBarButtonItem = self.splitViewController.displayModeButtonItem;
+    ////        chatViewController.navigationItem.leftItemsSupplementBackButton = YES;
+    //    }
 }
 
 #pragma mark - UISearchControllerDelegate
 
 - (void)willPresentSearchController:(UISearchController *)__unused searchController {
     
-    self.searchResultsController.tableView.dataSource = self.dialogsSearchDataSource;
+    [self updateDataSourceByScope:searchController.searchBar.selectedScopeButtonIndex];
     self.tabBarController.tabBar.hidden = YES;
+    
+    [self.tableView setContentInset:UIEdgeInsetsMake(30, 0, 0, 0)];
 }
 
 - (void)willDismissSearchController:(UISearchController *)__unused searchController {
     
+    self.tableView.dataSource = self.dataSource;
+    [self updateItemsFromContactList];
+    
     self.tabBarController.tabBar.hidden = NO;
+    
+    [self.tableView setContentInset:UIEdgeInsetsMake(0, 0, 0, 0)];
 }
 
 #pragma mark - UISearchResultsUpdating
 
 - (void)updateSearchResultsForSearchController:(UISearchController *)searchController {
     
-    [self.dialogsSearchDataSource.searchDataProvider performSearch:searchController.searchBar.text];
+    if (searchController.searchBar.selectedScopeButtonIndex == QMSearchScopeButtonIndexGlobal
+        && ![QMCore instance].isInternetConnected) {
+        
+        [SVProgressHUD showErrorWithStatus:NSLocalizedString(@"QM_STR_CHECK_INTERNET_CONNECTION", nil)];
+        return;
+    }
+    
+    [self.searchResultsController performSearch:searchController.searchBar.text];
 }
+
+#pragma mark - UISearchBarDelegate
+
+- (void)searchBar:(UISearchBar *)__unused searchBar selectedScopeButtonIndexDidChange:(NSInteger)selectedScope {
+    
+    [self updateDataSourceByScope:selectedScope];
+    [self.searchResultsController performSearch:self.searchController.searchBar.text];
+}
+
+- (void)searchBarCancelButtonClicked:(UISearchBar *)__unused searchBar {
+    
+    [self.globalSearchDataSource.globalSearchDataProvider cancel];
+}
+
+#pragma mark - Update items
+
+- (void)updateItemsFromContactList {
+    
+    NSArray *friends = [[QMCore instance].contactManager friends];
+    [self.dataSource replaceItems:friends];
+}
+
+
+
+
+#pragma mark - UIScrollViewDelegate
+
+- (void)scrollViewWillBeginDragging:(UIScrollView *)__unused scrollView {
+    
+    [self.searchController.searchBar endEditing:YES];
+}
+
+
+#pragma mark - QMSearchProtocol
+
+- (QMSearchDataSource *)searchDataSource {
+    
+    return (id)self.tableView.dataSource;
+}
+
 
 #pragma mark - QMSearchResultsControllerDelegate
 
@@ -351,7 +496,7 @@ QMSearchResultsControllerDelegate
 
 - (void)searchResultsController:(QMSearchResultsController *)__unused searchResultsController didSelectObject:(id)object {
     
-    [self performSegueWithIdentifier:kQMSceneSegueChat sender:object];
+    [self performSegueWithIdentifier:kQMSceneSegueUserInfo sender:object];
 }
 
 #pragma mark - QMChatServiceDelegate
@@ -528,6 +673,12 @@ QMSearchResultsControllerDelegate
 
 #pragma mark - Helpers
 
+- (void)updateDataSourceByScope:(NSUInteger)selectedScope {
+    
+    self.searchResultsController.tableView.dataSource = self.globalSearchDataSource;
+    [self.searchResultsController.tableView reloadData];
+}
+
 - (void)checkIfDialogsDataSource {
     
     if (![self.tableView.dataSource isKindOfClass:[QMDialogsDataSource class]]) {
@@ -554,10 +705,32 @@ QMSearchResultsControllerDelegate
 
 - (void)registerNibs {
     
+    [QMContactCell registerForReuseInTableView:self.tableView];
+    [QMContactCell registerForReuseInTableView:self.searchResultsController.tableView];
+    
+    [QMNoResultsCell registerForReuseInTableView:self.tableView];
+    [QMNoResultsCell registerForReuseInTableView:self.searchResultsController.tableView];
+    
+    [QMSearchCell registerForReuseInTableView:self.tableView];
+    [QMSearchCell registerForReuseInTableView:self.searchResultsController.tableView];
+    
+    [QMNoContactsCell registerForReuseInTableView:self.tableView];
+    
     [QMDialogCell registerForReuseInTableView:self.tableView];
     [QMDialogCell registerForReuseInTableView:self.searchResultsController.tableView];
-    
-    [QMNoResultsCell registerForReuseInTableView:self.searchResultsController.tableView];
+    //
+    //    [QMContactCell registerForReuseInTableView:self.tableView];
+    //    [QMContactCell registerForReuseInTableView:self.searchResultsController.tableView];
+    //
+    //    [QMNoResultsCell registerForReuseInTableView:self.tableView];
+    //    [QMNoResultsCell registerForReuseInTableView:self.searchResultsController.tableView];
+    //
+    //    [QMSearchCell registerForReuseInTableView:self.tableView];
+    //    [QMSearchCell registerForReuseInTableView:self.searchResultsController.tableView];
+    //
+    //    [QMNoContactsCell registerForReuseInTableView:self.tableView];
+    //    [QMNoContactsCell registerForReuseInTableView:self.searchResultsController.tableView];
 }
 
 @end
+

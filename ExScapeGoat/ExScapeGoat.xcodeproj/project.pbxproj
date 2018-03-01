@@ -4416,7 +4416,7 @@
 				TargetAttributes = {
 					69D57E5118ACC11C00A9900A = {
 						DevelopmentTeam = RAA3Q4LSV6;
-						ProvisioningStyle = Manual;
+						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
 								enabled = 1;
@@ -5244,10 +5244,10 @@
 				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = YES;
 				CODE_SIGN_ENTITLEMENTS = "ExScapeGoat/Q-municate.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer: Jessica Strickland (74GCFQ247R)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Jessica Strickland (74GCFQ247R)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
-				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = RAA3Q4LSV6;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -5277,8 +5277,8 @@
 				OTHER_LIBTOOLFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ExScapeGoat.exgoat;
 				PRODUCT_NAME = "ExScapeGoat!";
-				PROVISIONING_PROFILE = "06c83e6a-25e7-49e2-92c4-f02277471d6c";
-				PROVISIONING_PROFILE_SPECIFIER = "ExGoat Dev";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				REZ_SEARCH_PATHS = "$(inherited)";
 				SDKROOT = iphoneos;
 				SWIFT_OBJC_BRIDGING_HEADER = "$(PROJECT_DIR)/MediaHiderApp/Frameworks/Manual/BridgeHeader.h";
@@ -5310,10 +5310,10 @@
 				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = YES;
 				CODE_SIGN_ENTITLEMENTS = "ExScapeGoat/Q-municate.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer: Jessica Strickland (74GCFQ247R)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Jessica Strickland (74GCFQ247R)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
-				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = RAA3Q4LSV6;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -5348,8 +5348,8 @@
 				OTHER_LIBTOOLFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ExScapeGoat.exgoat;
 				PRODUCT_NAME = "ExScapeGoat!";
-				PROVISIONING_PROFILE = "06c83e6a-25e7-49e2-92c4-f02277471d6c";
-				PROVISIONING_PROFILE_SPECIFIER = "ExGoat Dev";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				REZ_SEARCH_PATHS = "$(inherited)";
 				SDKROOT = iphoneos;
 				SWIFT_OBJC_BRIDGING_HEADER = "$(PROJECT_DIR)/MediaHiderApp/Frameworks/Manual/BridgeHeader.h";

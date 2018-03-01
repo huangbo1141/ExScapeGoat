@@ -10,7 +10,7 @@
 #import <SVProgressHUD.h>
 #import "QMCore.h"
 
-NSString *const kQMAgreementUrl = @"https://iwazowski.com/legal/Privacy_Policy.rtf";//@"http://exscapegoat.com/agreement";
+NSString *const kQMAgreementUrl = @"http://www.exscapegoat.com/eulaagreement";//@"http://exscapegoat.com/agreement";
 
 @interface QMLicenseAgreementViewController () <UIWebViewDelegate>
 
@@ -29,11 +29,13 @@ NSString *const kQMAgreementUrl = @"https://iwazowski.com/legal/Privacy_Policy.r
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    BOOL licenceAccepted = [QMCore instance].currentProfile.userAgreementAccepted;
-    if (licenceAccepted) {
-        
-        self.navigationItem.rightBarButtonItem = nil;
-    }
+//    BOOL licenceAccepted = [QMCore instance].currentProfile.userAgreementAccepted;
+//    if (licenceAccepted) {
+//
+//        self.navigationItem.rightBarButtonItem = nil;
+//    }
+    
+    self.navigationItem.leftBarButtonItem = nil;
     
     [SVProgressHUD showWithMaskType:SVProgressHUDMaskTypeClear];
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:kQMAgreementUrl]];

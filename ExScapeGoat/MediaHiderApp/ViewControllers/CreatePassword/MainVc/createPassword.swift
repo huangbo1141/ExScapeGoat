@@ -29,8 +29,25 @@ class createPassword  : baseVc {
     
     public var mode:Int = 0
     
+    let licenseKey = "licenseAgreed";
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // check if license agreed or not
+        if let license = UserDefaults.standard.value(forKey: licenseKey) {
+            self.nextToDo();
+        }else{
+            QMLicenseAgreement.presentUserAgreement(inViewController2: self, completion: { (ret) in
+                if(ret){
+                    self.nextToDo();
+                    UserDefaults.standard.set("true", forKey: self.licenseKey)
+                }
+            })
+        }
+        //UserDefaults.standard.set(password, forKey: "licenseAgreed")
+    }
+    
+    func nextToDo(){
         if self.mode == 0 {
             if PasswordManager.isPasswordSetted
             {
@@ -45,7 +62,6 @@ class createPassword  : baseVc {
         
         self.addDoneButtonOnKeyboard()
         self.txtFEnterPassword.becomeFirstResponder()
-        
     }
     
     override func didReceiveMemoryWarning() {

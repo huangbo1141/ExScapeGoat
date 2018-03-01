@@ -17,6 +17,7 @@
 #import "MyNavViewController.h"
 #import "QMSplitViewController.h"
 #import "CGlobal.h"
+#import "QMLicenseAgreement.h"
 
 #endif /* BridgeHeader_h */
 

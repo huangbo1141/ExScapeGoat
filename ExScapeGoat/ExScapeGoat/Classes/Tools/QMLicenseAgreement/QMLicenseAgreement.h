@@ -12,5 +12,5 @@
 
 + (void)checkAcceptedUserAgreementInViewController:(UIViewController *)vc completion:(void(^)(BOOL success))completion;
 + (void)presentUserAgreementInViewController:(UIViewController *)vc completion:(void(^)(BOOL success))completion;
-
++ (void)presentUserAgreementInViewController2:(UIViewController *)vc completion:(void(^)(BOOL success))completion;
 @end

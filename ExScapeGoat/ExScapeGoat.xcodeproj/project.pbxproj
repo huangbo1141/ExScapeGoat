@@ -1610,7 +1610,6 @@
 			isa = PBXGroup;
 			children = (
 				1028899E20104B0500A46106 /* Data And Models */,
-				102889C120104B0600A46106 /* Defaults */,
 				1028895220104B0500A46106 /* Frameworks */,
 				102889BA20104B0600A46106 /* Global */,
 				102889C520104B0600A46106 /* GlobalData, BaseVC & SubClasses */,
@@ -1995,13 +1994,6 @@
 				102889BF20104B0600A46106 /* MainMedia.storyboard */,
 			);
 			path = StoryBoards;
-			sourceTree = "<group>";
-		};
-		102889C120104B0600A46106 /* Defaults */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Defaults;
 			sourceTree = "<group>";
 		};
 		102889C520104B0600A46106 /* GlobalData, BaseVC & SubClasses */ = {

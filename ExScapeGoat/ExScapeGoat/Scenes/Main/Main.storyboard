@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="FCI-lM-7qj">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="FCI-lM-7qj">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13527"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -97,6 +97,7 @@ out here.</string>
                     <connections>
                         <segue destination="GF2-VD-d6E" kind="custom" identifier="SceneSegueAuth" customClass="QMRootViewControllerSegue" id="bdb-ZN-ltF"/>
                         <segue destination="tuk-08-fQq" kind="push" identifier="SceneSegueChat" id="SNY-8a-GbO"/>
+                        <segue destination="UXp-CI-mhH" kind="show" identifier="SceneSegueUserInfo" id="lXY-tZ-u3x"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="7lV-91-Vld" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -454,5 +455,6 @@ out here.</string>
     <inferredMetricsTieBreakers>
         <segue reference="SNY-8a-GbO"/>
         <segue reference="Px9-Y7-A73"/>
+        <segue reference="lXY-tZ-u3x"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -32,6 +32,10 @@ class CloudKitManager {
         ///forbide to create instance of helper class
     }
     
+    static var privateCloudDatabase: CKDatabase {
+        return CKContainer.default().privateCloudDatabase
+    }
+    
     static var publicCloudDatabase: CKDatabase {
         return CKContainer.default().publicCloudDatabase
     }
@@ -41,7 +45,7 @@ class CloudKitManager {
         let predicate = NSPredicate(value: true)
         let query = CKQuery(recordType: type.rawValue, predicate: predicate)
         
-        publicCloudDatabase.perform(query, inZoneWith: nil) { (records, error) in
+        privateCloudDatabase.perform(query, inZoneWith: nil) { (records, error) in
             completion(records,error as NSError?)
         }
     }
@@ -55,7 +59,7 @@ class CloudKitManager {
             record.setValue(value, forKey: key)
         }
         
-        publicCloudDatabase.save(record) { (savedRecord, error) in
+        privateCloudDatabase.save(record) { (savedRecord, error) in
             DispatchQueue.main.async {
                 completion(savedRecord, error as NSError?)
             }
@@ -66,7 +70,7 @@ class CloudKitManager {
     static func updateRecord(_ recordId: String, keysAndValuesToUpdate : [String : Any], completion: @escaping (CKRecord?, NSError?) -> Void) {
         
         let recordId = CKRecordID(recordName: recordId)
-        publicCloudDatabase.fetch(withRecordID: recordId) { updatedRecord, error in
+        privateCloudDatabase.fetch(withRecordID: recordId) { updatedRecord, error in
             guard let record = updatedRecord else {
                 DispatchQueue.main.async {
                     completion(nil, error as NSError?)
@@ -78,7 +82,7 @@ class CloudKitManager {
                 record.setValue(value, forKey: key)
             }
             
-            self.publicCloudDatabase.save(record) { savedRecord, error in
+            self.privateCloudDatabase.save(record) { savedRecord, error in
                 DispatchQueue.main.async {
                     completion(savedRecord, error as NSError?)
                 }
@@ -89,7 +93,7 @@ class CloudKitManager {
     //MARK: remove the record
     static func removeRecord(_ recordId: String, completion: @escaping (String?, NSError?) -> Void) {
         let recordId = CKRecordID(recordName: recordId)
-        publicCloudDatabase.delete(withRecordID: recordId, completionHandler: { deletedRecordId, error in
+        privateCloudDatabase.delete(withRecordID: recordId, completionHandler: { deletedRecordId, error in
             DispatchQueue.main.async {
                 completion (deletedRecordId?.recordName, error as NSError?)
             }

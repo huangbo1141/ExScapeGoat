@@ -54,6 +54,8 @@ static NSString * const kQMAccountKey = @"MVtxCDzE5X1hvzTvpPq4";
 #import "VSSyncContainerViewController.h"
 #import "ExScapeGoat_-Swift.h"
 
+
+
 @interface QMAppDelegate () <QMPushNotificationManagerDelegate,SFSafariViewControllerDelegate>
 
 @property (nonatomic, assign) BOOL browserIsOpen;
@@ -79,7 +81,7 @@ static NSString *firstRunDateKey = @"firstRun";
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    //sleep(2);
+    //sleep(2);    
     
     application.applicationIconBadgeNumber = 0;
     if (!application.supportsAlternateIcons) {
@@ -347,6 +349,8 @@ static NSString *firstRunDateKey = @"firstRun";
         [self.lockManager setupViewWithView:self.window];
         self.homebuttonHistory = 0 ;
     }
+    
+    
 }
 
 - (BOOL)application:(UIApplication *)application

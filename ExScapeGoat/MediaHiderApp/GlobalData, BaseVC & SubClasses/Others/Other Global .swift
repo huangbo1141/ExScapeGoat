@@ -66,20 +66,8 @@ func G_loaderShow()
 {
     G_threadMain {
         
-        var vc : UIViewController!
-        
-        if let navi = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController
-        {
-            vc = navi.topViewController
-        }
-        else
-        {
-            vc = UIApplication.shared.keyWindow?.rootViewController
-        }
-        
-        PR_Ext.userInterection(false)
-        
-        loader.ars_showOnView( vc.view, completionBlock: nil)
+        UIApplication.shared.keyWindow?.isUserInteractionEnabled = false
+        loader.ars_showOnView( UIApplication.shared.keyWindow!, completionBlock: nil)
     }
 }
 
@@ -87,7 +75,7 @@ func G_loaderHide()
 {
     G_threadMain {
         
-        PR_Ext.userInterection(true)
+        UIApplication.shared.keyWindow?.isUserInteractionEnabled = true
         
         loader.backgroundBlurView.removeFromSuperview()
         loader.backgroundFullView.removeFromSuperview()
@@ -106,24 +94,18 @@ func G_loaderHide()
 
 func G_threadMain(_ execute : @escaping() -> ()) {
     
-    if Thread.isMainThread
-    {
+    if Thread.isMainThread {
         execute()
-    }
-    else
-    {
+    } else {
         DispatchQueue.main.async { execute() }
     }
 }
 
 func G_threadBackground(_ execute : @escaping() -> ()) {
     
-    if Thread.isMainThread
-    {
+    if Thread.isMainThread {
         DispatchQueue.global(qos: DispatchQoS.QoSClass.background).async { execute() }
-    }
-    else
-    {
+    } else {
         execute()
     }
 }

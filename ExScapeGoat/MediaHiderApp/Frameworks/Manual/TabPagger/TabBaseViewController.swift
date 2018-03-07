@@ -24,7 +24,59 @@ class TabBaseViewController: baseVc {
     /// Setting it self in Home viewDidLoad.
     weak var deligateCustom : home? = nil
     
+    /// Bar button Items
+    var barButtonItemSearch : UIBarButtonItem!
+    var barButtonItemAdd : UIBarButtonItem!
+    var barButtonRestore : UIBarButtonItem!
     
+    //***********************************
+    // MARK: Defaults
+    //***********************************
+    
+    override func loadView() {
+        super.loadView()
+        
+        /// Init Bar Buttons
+        self.barButtonItemSearch  =  UIBarButtonItem.init(image: #imageLiteral(resourceName: "img_searchIcon"), style: .plain, target: self, action: #selector(clickedOnSearchButton(_:)))
+        self.barButtonItemAdd =  UIBarButtonItem.init(image: #imageLiteral(resourceName: "img_AddIcon"), style: .plain, target: self, action: #selector(clickOnAddIcon(_:)))
+        self.barButtonRestore = UIBarButtonItem.init(title: "Restore", style: .plain, target: self, action: #selector(clickOnRestoreButton(_:)))
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        self.title = "Media"
+        
+        // MARK: PANKAJ
+        
+        self.PR_AddLeftNaviButton(img: #imageLiteral(resourceName: "img_menuHome"), selector: #selector(clickOnMenuIcon(_:)) , title: nil, size: CGSize.init(width: 40, height: 40))
+        
+        self.showAdd_SearchNavigationButton()        
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        self.navigationController?.setNavigationBarHidden(false, animated: false)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        self.addTabLayout()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        // MARK: PANKAJ
+        self.deligateCustom?.baseTabViewWillDisappear()
+        self.deligateCustom = nil
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+    }
     
     //***********************************
     // MARK: Custom Funtions
@@ -35,11 +87,16 @@ class TabBaseViewController: baseVc {
      */
     
     func showAddNavigationButton()  {
-        self.PR_AddRightNaviButton(img: #imageLiteral(resourceName: "img_AddIcon"), selector: #selector(clickOnAddIcon(_:)), title: nil, size: CGSize.init(width: 10, height: 10))
+        self.navigationItem.setRightBarButtonItems([barButtonItemAdd], animated: true)
     }
     
+    func showAdd_SearchNavigationButton()  {
+        self.navigationItem.setRightBarButtonItems([barButtonItemSearch,barButtonItemAdd], animated: true)
+    }
+    
+    /// Hit from Home Viewcontroller
     func showRestoreNavigationButton()  {
-        self.PR_AddRightNaviButton(img: nil, selector: #selector(clickOnRestoreButton(_:)), title: "Restore", size: nil)
+        self.navigationItem.setRightBarButtonItems([barButtonRestore], animated: true)
     }
     
     
@@ -66,6 +123,7 @@ class TabBaseViewController: baseVc {
             self.deligateCustom?.clickOnDropDownButton(condition: condtion)
         }
     }
+    
     @objc func clickOnBackIcon(_ sender : UIButton)  {
         
         if let vc = self.navigationController {
@@ -83,9 +141,10 @@ class TabBaseViewController: baseVc {
         deligateCustom?.clickOnRestoreButton()
     }
     
-    
-    
-    
+    @objc func clickedOnSearchButton(_ sender : UIButton)
+    {     
+        deligateCustom?.clickedOnSearchButton()
+    }
     
     
     @IBOutlet weak var tabParentView: UIView!
@@ -97,43 +156,6 @@ class TabBaseViewController: baseVc {
     
     var tabsList = [String]()
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        self.title = "Media"
-        
-        
-        // MARK: PANKAJ
-        self.PR_AddLeftNaviButton(img: #imageLiteral(resourceName: "img_menuHome"), selector: #selector(clickOnMenuIcon(_:)) , title: nil, size: CGSize.init(width: 40, height: 40))
-        
-        self.showAddNavigationButton()
-        // TMP HANDLING
-        //self.clickOnMenuIcon(UIButton())
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        self.navigationController?.setNavigationBarHidden(false, animated: false)
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        
-        
-        self.addTabLayout()
-    }
-    
-    
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        
-        // MARK: PANKAJ
-        
-        self.deligateCustom = nil
-    }
     
     //MARK:- Perform Seque
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

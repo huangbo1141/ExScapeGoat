@@ -21,9 +21,22 @@ class home: baseVc {
     /**
      Helpers
      */
+    var isFirstOpen : Bool {
+        get{ return !UserDefaults.standard.bool(forKey: "isFirstOpen")}
+        set(newValue){ UserDefaults.standard.set(newValue, forKey: "isFirstOpen")}
+    }
     
     /// This will help in selecting media
     var isSelectingEnable = false
+    
+    /// Search Helper
+    var isSearching = false
+    
+    /**
+     UI Related
+     */
+    
+    var searchBar: UISearchBar?
     
     /**
      Datasourcce
@@ -37,9 +50,6 @@ class home: baseVc {
     
     var tabBase : TabBaseViewController? = nil
     
-    /**
-     DataSource
-     */
     struct ModelMediaHome {
         var previewImage : UIImage!
         var img : UIImage!
@@ -47,8 +57,10 @@ class home: baseVc {
         var isSelected : Bool!
         var itemName : String!
         var objPrimaryKey : String!
+        var realmModel : ModelMedia!
     }
     var arrPhotos = [ModelMediaHome]()
+    var arrFilteredPhotos = [ModelMediaHome]()
     var arrVideos = [ModelMediaHome]()
     
     //*********************************************
@@ -64,13 +76,32 @@ class home: baseVc {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        G_loaderShow()
+        if isFirstOpen {
+            self.checkAndAskToRestoreFromClould()
+        } else {
+
+            G_loaderShow()
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
+                /// Setup Data
+                self.setupData()
+            })
+        }
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
-            
-            /// Setup Data
-            self.setupData()
-        })
+//        clouldKitHelper.syncPhotosWithiClould()
+//
+//        CloudKitManager.fetchData(ofType: .media, { (records, error) in
+//
+//            print("This is sample", records?.count)
+//
+//            records!.forEach({
+//
+//                CloudKitManager.removeRecord($0.recordID.recordName, completion: { (record, error) in
+//                    print(record, "is Deleted")
+//                })
+//            })
+//        })
+        
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -97,6 +128,12 @@ class home: baseVc {
         
         print("Memory Warning Recieved")
         
+    }
+    
+    /// BaseViewController Defaults
+    
+    func baseTabViewWillDisappear() {
+       self.searchBar?.removeFromSuperview()
     }
 }
 
@@ -148,8 +185,8 @@ extension home
                     
                     let nameFromData = String.init(data: originalData, encoding: String.Encoding.utf8)!
                     
-                    if obj.isVideo == false && self.enumSourceType == .photos
-                    {
+                    if obj.isVideo == false && self.enumSourceType == .photos {
+                        
                         group.enter()
                         G_threadBackground {
                             
@@ -164,14 +201,14 @@ extension home
                                                                                imagePath: dataAndURL.1,
                                                                                isSelected: false,
                                                                                itemName : nameFromData,
-                                                                               objPrimaryKey : passwordForMedia))
+                                                                               objPrimaryKey : passwordForMedia,
+                                                                               realmModel : obj))
                             }
                             
                             group.leave()
                         }
-                    }
-                    else if obj.isVideo == true && self.enumSourceType == .videos
-                    {
+                    } else if obj.isVideo == true && self.enumSourceType == .videos {
+                        
                         group.enter()
                         G_threadBackground {
                             
@@ -185,7 +222,8 @@ extension home
                                                                                imagePath: dataAndURL.1,
                                                                                isSelected: false,
                                                                                itemName : nameFromData,
-                                                                               objPrimaryKey : passwordForMedia))
+                                                                               objPrimaryKey : passwordForMedia,
+                                                                               realmModel : obj))
                             }
                             
                             group.leave()
@@ -214,6 +252,11 @@ extension home
     
     /// Single Selection Work here.
     @objc func longGuesturePressed(_ sender : CustomUILongPressGestureRecognizer)  {
+        
+        /// No need this if user is searching pictures
+        if isSearching {
+            return
+        }
         
         if sender.state == .began
         {
@@ -249,6 +292,15 @@ extension home
      */
     
     public func clickedOnAddButton() {
+        
+        /// Needed at multiple places
+        func refreshData() {
+            G_loaderHide()
+            self.setupData()
+            
+            /// Sync with iClould
+            clouldKitHelper.syncPhotosWithiClould()
+        }
         
         let pickerController = DKImagePickerController()
         pickerController.assetType = enumSourceType == .photos ? .allPhotos : .allVideos
@@ -318,8 +370,7 @@ extension home
                               
                                 if assets.count == count + 1
                                 {
-                                    G_loaderHide()
-                                    self.setupData()
+                                    refreshData()
                                 }
                                 else
                                 {
@@ -377,8 +428,7 @@ extension home
                               
                                 if assets.count == count + 1
                                 {
-                                    G_loaderHide()
-                                    self.setupData()
+                                    refreshData()
                                 }
                                 else
                                 {
@@ -437,7 +487,8 @@ extension home
                     arrVideos[i].isSelected = false
                 }
             }
-        }else if condition == .selectBack
+        }
+        else if condition == .selectBack
         {
             self.navigationController?.popViewController(animated: true)
             return;
@@ -446,7 +497,7 @@ extension home
         self.cln.reloadData()
         
         self.adjustNavigationAsPerSelection()
-    }
+    }    
 }
 
 
@@ -552,7 +603,12 @@ extension home
         else
         {
             isSelectingEnable = false
-            tabBase?.showAddNavigationButton()
+            
+            if enumSourceType == .photos {
+                tabBase?.showAdd_SearchNavigationButton()
+            } else if enumSourceType == .videos {
+                tabBase?.showAddNavigationButton()
+            }
         }
     }
     
@@ -599,5 +655,102 @@ extension home
     }
 }
 
+
+extension home {
+    
+    func checkAndAskToRestoreFromClould() {
+        
+        clouldKitHelper.fetchAllMediaFromIClould { (arrDataOptional) in
+            
+            if let arrData = arrDataOptional, arrData.isEmpty == false {
+                
+                let alert = UIAlertController.init(title: "Restore", message: "Restore previous data from iCLould", preferredStyle: .alert)
+                
+                alert.addAction(UIAlertAction.init(title: "Cancel", style: .destructive, handler: { (_) in
+                    self.isFirstOpen = true
+                }))
+                
+                alert.addAction(UIAlertAction.init(title: "Ok", style: .default, handler: { (_) in
+                    self.isFirstOpen = true
+                    self.fetchFromiClould()
+                }))
+                
+                DispatchQueue.main.async {
+                    self.present(alert, animated: true, completion: nil)
+                }
+                
+            } else {
+                self.setupData()
+            }
+        }
+    }
+    
+    func fetchFromiClould() {
+        
+        G_loaderShow()
+        
+        let iclouldRestoreGroup = DispatchGroup()
+        
+        clouldKitHelper.fetchAllMediaFromIClould { (arrDataOptional) in
+            
+            if let arrData = arrDataOptional {
+                
+                func SaveMediaToLocal(count : Int)  {
+                    
+                    let data : Data =  arrData[count].image!
+                    
+                    var imgName : String = arrData[count].imageName!
+                    
+                    photosManager.enumSourceType = .photos
+                    
+                    if let itemName = photosManager.writeItem(fromData: data, withName: imgName)
+                    {
+                        if let itemNameData: Data = itemName.data(using: .utf8)
+                        {
+                            iclouldRestoreGroup.enter()
+                            DispatchQueue.main.async {
+                                
+                                let pass = "\(arc4random_uniform(999999999))"
+                                
+                                let data = RNCryptor.encrypt(data: itemNameData, withPassword: pass)
+                                
+                                let obj = ModelMedia()
+                                
+                                obj.encryptedNameOfItem = data
+                                obj.password = pass
+                                obj.isUploaded = true
+                                obj.iclouldIdentifier = arrData[count].identifier
+                                obj.tags = arrData[count].tags
+                                
+                                PR_RealmManager.Add(objectToRealm: obj, update: false, errorMessage: "Inn")
+                                
+                                iclouldRestoreGroup.leave()
+                            }
+                        }
+                    }
+                    
+                    iclouldRestoreGroup.notify(queue: .main, execute: {
+                        
+                        if arrData.count == count + 1
+                        {
+                            G_loaderHide()
+                            self.setupData()
+                        }
+                        else
+                        {
+                            SaveMediaToLocal(count: count + 1)
+                        }
+                    })
+                    
+                }
+                
+                SaveMediaToLocal(count: 0)
+                
+            } else {
+                G_loaderHide()
+            }
+        }
+    }
+}
 
 

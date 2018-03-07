@@ -18,6 +18,16 @@ extension home
         if enumSourceType == .photos
         {
             arrSelectedObj = self.arrPhotos.filter{ return $0.isSelected == true }
+
+            /// sync with iClould
+            arrSelectedObj.forEach({
+                
+                if $0.realmModel.isUploaded {
+                    CloudKitManager.removeRecord($0.realmModel.iclouldIdentifier, completion: { (identifier, error) in
+                        print(identifier, " is deleted")
+                    })
+                }
+            })
         }
         else if enumSourceType == .videos
         {

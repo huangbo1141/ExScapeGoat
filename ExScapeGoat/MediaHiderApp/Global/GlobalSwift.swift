@@ -14,6 +14,7 @@ import AVFoundation
 private let _sharedManager = GlobalSwift()
 
 class GlobalSwift:NSObject{
+    
     class var sharedManager:GlobalSwift {
         return _sharedManager;
     }

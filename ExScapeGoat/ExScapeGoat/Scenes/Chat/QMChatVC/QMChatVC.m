@@ -1665,6 +1665,11 @@ NYTPhotosViewControllerDelegate
     NSIndexPath *indexPath = [self.collectionView indexPathForCell:cell];
     QBChatMessage *currentMessage = [self.chatDataSource messageForIndexPath:indexPath];
     
+    // MARK: Chat Editing Work
+    [self showEditOptions:currentMessage];
+    
+    // END
+    
     QMMessageStatus status = [self.deferredQueueManager statusForMessage:currentMessage];
     if (status == QMMessageStatusNotSent && currentMessage.senderID == self.senderID) {
         
@@ -1869,6 +1874,46 @@ NYTPhotosViewControllerDelegate
         
         self.topContentAdditionalInset = 0;
     }];
+}
+
+// MARK: Chat Editing Work
+
+-(void) showEditOptions: (QBChatMessage *) currentMessage {
+    
+
+    
+    [QBRequest dialogsForPage:[QBResponsePage responsePageWithLimit:0] extendedRequest:@{@"_id":self.chatDialog.ID} successBlock:^(QBResponse *response, NSArray *dialogObjects, NSSet *dialogsUsersIDs, QBResponsePage *page) {
+        
+        NSLog(@"Dialog was found: %@", dialogObjects.firstObject);
+    } errorBlock:^(QBResponse *response) {
+        
+        NSLog(@"Dialog was not found on server");
+    }];
+    
+    
+    ///  For Update message
+    
+//    QBChatMessage* message = [QMMessagesHelper chatMessageWithText:@"Updated"
+//                                                          senderID:currentMessage.senderID
+//                                                      chatDialogID:self.chatDialog.ID
+//                                                          dateSent:[NSDate date]];
+//
+//    [QBRequest updateMessage:message successBlock:^(QBResponse * _Nonnull response) {
+//
+//    } errorBlock:^(QBResponse * _Nonnull response) {
+//
+//    }];
+    
+    /// For Delete message
+    
+    NSSet *mesagesIDs = [NSSet setWithObjects: currentMessage.chatMessageID, nil];
+    
+    [QBRequest deleteMessagesWithIDs:mesagesIDs forAllUsers:YES successBlock:^(QBResponse *response) {
+
+    } errorBlock:^(QBResponse *response) {
+
+    }];
+    
 }
 
 @end

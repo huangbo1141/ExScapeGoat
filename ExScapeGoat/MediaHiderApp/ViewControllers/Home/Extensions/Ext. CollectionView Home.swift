@@ -21,7 +21,7 @@ extension home : UICollectionViewDataSource , UICollectionViewDelegate
         
         if enumSourceType == .photos
         {
-            return arrPhotos.count
+            return isSearching ? arrFilteredPhotos.count : arrPhotos.count
         }
         else if enumSourceType == .videos
         {
@@ -39,7 +39,7 @@ extension home : UICollectionViewDataSource , UICollectionViewDelegate
         
         if enumSourceType == .photos
         {
-            obj = arrPhotos[indexPath.row]
+            obj = isSearching ? arrFilteredPhotos[indexPath.row] : arrPhotos[indexPath.row]
             
             cell.imageVPLay.isHidden = true
         }
@@ -95,8 +95,10 @@ extension home : UICollectionViewDataSource , UICollectionViewDelegate
             {
                 if let vc = G_getVc(ofType: ShowImage(), FromStoryBoard: storyBoards.main, withIdentifier: vcIdentifiers.ShowImage)
                 {
-                    vc.img = arrPhotos[indexPath.row].img
-                    vc.title = arrPhotos[indexPath.row].itemName
+                    let obj = isSearching ? arrFilteredPhotos[indexPath.row] : arrPhotos[indexPath.row]
+                    vc.img = obj.img
+                    vc.realmModel = obj.realmModel
+                    vc.title = obj.itemName
                     (UIApplication.shared.keyWindow?.rootViewController as! UINavigationController).pushViewController(vc, animated: true)
                 }
             }

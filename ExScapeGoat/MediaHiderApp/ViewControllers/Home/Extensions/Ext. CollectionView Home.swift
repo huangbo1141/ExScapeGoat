@@ -149,4 +149,9 @@ class cellClnVcHome: UICollectionViewCell {
     @IBOutlet weak var imageVTick : customUIImageView!
     @IBOutlet weak var imageVPLay : customUIImageView!
     
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        debugPrint("awakeFromNib")
+    }
+    
 }

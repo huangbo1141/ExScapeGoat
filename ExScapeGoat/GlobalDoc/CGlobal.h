@@ -21,4 +21,6 @@ typedef void (^PermissionCallback)(BOOL ret);
 +(void)stopIndicator:(UIViewController*)viewcon;
 +(void)showIndicatorForView:(UIView*)viewcon;
 +(void)stopIndicatorForView:(UIView*)viewcon;
+
++ (UIColor *)colorWithHexString:(NSString *)stringToConvert Alpha:(CGFloat)alpha;
 @end

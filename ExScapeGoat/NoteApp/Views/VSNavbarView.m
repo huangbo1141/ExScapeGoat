@@ -10,7 +10,7 @@
 #import "VSNavbarButton.h"
 #import "UIView+RSExtras.h"
 #import "VSTypographySettings.h"
-
+#import "CGlobal.h"
 
 @interface VSNavbarView ()
 
@@ -102,7 +102,9 @@
 #pragma mark - Class Methods
 
 + (UIColor *)backgroundColor {
-	return [app_delegate.theme colorForKey:@"navbarBackgroundColor"];
+//    return [app_delegate.theme colorForKey:@"navbarBackgroundColor"];
+    
+    return [CGlobal colorWithHexString:@"#2E92C6" Alpha:1.0];
 }
 
 
